@@ -2,7 +2,6 @@ import {
   Injectable,
   ForbiddenException,
   NotFoundException,
-  BadRequestException,
 } from "@nestjs/common";
 import { PrismaService } from "../prisma/prisma.service";
 import { AuditLogService } from "../audit/audit.service";
@@ -50,14 +49,12 @@ export class TaskService {
       throw new NotFoundException("Task not found");
     }
 
-    // Check permissions
     if (userRole !== "ADMIN") {
       if (existingTask.assignedTo !== userId) {
         throw new ForbiddenException(
           "You can only update tasks assigned to you",
         );
       }
-      // Non-admin can only update status
       const allowedUpdates =
         Object.keys(data).length === 1 && data.status !== undefined;
       if (!allowedUpdates) {
@@ -101,9 +98,7 @@ export class TaskService {
       throw new ForbiddenException("Only administrators can delete tasks");
     }
 
-    const task = await this.prisma.task.findUnique({
-      where: { id },
-    });
+    const task = await this.prisma.task.findUnique({ where: { id } });
 
     if (!task) {
       throw new NotFoundException("Task not found");
@@ -113,9 +108,7 @@ export class TaskService {
       deleted: task,
     });
 
-    return this.prisma.task.delete({
-      where: { id },
-    });
+    return this.prisma.task.delete({ where: { id } });
   }
 
   async getTasks(userId: string, userRole: string) {
@@ -139,27 +132,6 @@ export class TaskService {
       },
       orderBy: { createdAt: "desc" },
     });
-  }
-
-  async getTask(id: string, userId: string, userRole: string) {
-    const task = await this.prisma.task.findUnique({
-      where: { id },
-      include: {
-        assignedUser: {
-          select: { id: true, email: true, name: true },
-        },
-      },
-    });
-
-    if (!task) {
-      throw new NotFoundException("Task not found");
-    }
-
-    if (userRole !== "ADMIN" && task.assignedTo !== userId) {
-      throw new ForbiddenException("You can only view your assigned tasks");
-    }
-
-    return task;
   }
 
   async getAvailableUsers(userRole: string) {

@@ -20,34 +20,34 @@ export class TaskController {
   constructor(private taskService: TaskService) {}
 
   @Post()
-  createTask(@Body() body: any, @Request() req) {
+  createTask(@Body() body: any, @Request() req: any) {
     return this.taskService.createTask(body, req.user.id, req.user.role);
   }
 
   @Get()
-  getTasks(@Request() req) {
+  getTasks(@Request() req: any) {
     return this.taskService.getTasks(req.user.id, req.user.role);
   }
 
   @Get("users")
   @Roles("ADMIN")
   @UseGuards(RolesGuard)
-  getUsers(@Request() req) {
+  getUsers(@Request() req: any) {
     return this.taskService.getAvailableUsers(req.user.role);
   }
 
   @Get(":id")
-  getTask(@Param("id") id: string, @Request() req) {
+  getTask(@Param("id") id: string, @Request() req: any) {
     return this.taskService.getTask(id, req.user.id, req.user.role);
   }
 
   @Put(":id")
-  updateTask(@Param("id") id: string, @Body() body: any, @Request() req) {
+  updateTask(@Param("id") id: string, @Body() body: any, @Request() req: any) {
     return this.taskService.updateTask(id, body, req.user.id, req.user.role);
   }
 
   @Delete(":id")
-  deleteTask(@Param("id") id: string, @Request() req) {
+  deleteTask(@Param("id") id: string, @Request() req: any) {
     return this.taskService.deleteTask(id, req.user.id, req.user.role);
   }
 }

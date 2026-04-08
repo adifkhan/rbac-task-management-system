@@ -12,7 +12,7 @@ export class AuditController {
   @Get()
   @Roles("ADMIN")
   @UseGuards(RolesGuard)
-  getLogs(@Request() req) {
+  getLogs(@Request() req: any) {
     return this.auditLogService.getLogs(req.user.role);
   }
 }
